@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dark Themed Leaflet Map</title>
+    <!-- Include Leaflet CSS and JS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css">
+    <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+    <!-- Include Leaflet MarkerCluster CSS and JS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.0/dist/MarkerCluster.css">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.0/dist/MarkerCluster.Default.css">
+    <script src="https://unpkg.com/leaflet.markercluster@1.5.0/dist/leaflet.markercluster.js"></script>
+</head>
+<body>
+    <!-- Create a container for the map -->
+    <div id="map" style="width: 100%; height: 500px;"></div>
+    
+    <script>
+        // Initialize the map
+        var map = L.map('map').setView([25, 40], 3); // Adjust the view center and zoom level
+
+        // Add a dark-themed tile layer (CartoDB Dark Matter)
+        L.tileLayer('https://cartodb-basemaps-{s}.global.ssl.fastly.net/dark_all/{z}/{x}/{y}.png', {
+            attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, Imagery &copy; <a href="https://carto.com/attribution">CARTO</a>'
+        }).addTo(map);
+
+        // Load and style GeoJSON data (Arab countries)
+        fetch('https://raw.githubusercontent.com/two3four/web-map105/main/arab_con.geojson')
+            .then(response => response.json())
+            .then(data => {
+                L.geoJSON(data, {
+                    style: function(feature) {
+                        return {
+                            fillColor: 'rgba(0, 128, 255, 0.45)', // Sky blue with 45% transparency
+                            fillOpacity: 0.5,
+                            color: 'white',
+                            weight: 1
+                        };
+                    }
+                }).addTo(map);
+            });
+
+        // Load point layer GeoJSON and create a MarkerClusterGroup
+        fetch('https://raw.githubusercontent.com/two3four/web-map105/main/test_points.geojson')
+            .then(response => response.json())
+            .then(data => {
+                var markers = L.markerClusterGroup();
+
+                L.geoJSON(data, {
+                    pointToLayer: function(feature, latlng) {
+                        var marker = L.marker(latlng, {
+                            icon: L.divIcon({
+                                className: 'custom-marker',
+                                html: '<div class="marker-dot"></div>',
+                                iconSize: [20, 20] // Double the size
+                            })
+                        });
+
+                        if (feature.properties.Name === "Jeddah") {
+                            var popupContent = '<div class="popup-content">';
+                            popupContent += '<h3 class="popup-name">' + feature.properties.Name + '</h3>';
+                            popupContent += '<p class="popup-info">' + feature.properties.Info + '</p>';
+                            popupContent += '<div class="popup-image"><img src="' + feature.properties.Image + '" alt="' + feature.properties.Name + '"></div>';
+                            popupContent += '</div>';
+                            
+                            marker.bindPopup(popupContent, { 
+                                minWidth: 300, 
+                                maxWidth: 400,
+                                className: 'custom-popup' // Add custom class for styling
+                            });
+                        }
+
+                        return marker;
+                    }
+                }).addTo(markers);
+
+                map.addLayer(markers);
+            });
+    </script>
+
+    <style>
+        .custom-marker {
+            width: 20px;
+            height: 20px;
+            margin: -10px 0 0 -10px;
+        }
+        
+        .marker-dot {
+            width: 20px;
+            height: 20px;
+            background-color: red;
+            border-radius: 50%;
+            animation: pulse 1s infinite; /* Reduced to 1 second */
+        }
+        
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.2); }
+        }
+        
+        .marker-cluster {
+            background-color: rgba(0, 128, 255, 0.45); /* Sky blue with 45% transparency */
+        }
+
+        .marker-cluster div {
+            background-color: rgba(0, 128, 255, 0.45); /* Sky blue with 45% transparency */
+        }
+        
+        .custom-popup {
+            background-color: rgba(0, 0, 0, 0.8); /* Dark background color */
+            color: white;
+            font-family: Arial, sans-serif;
+            font-size: 14px;
+            padding: 10px;
+        }
+
+        .popup-name {
+            font-size: 18px;
+            font-weight: bold;
+            margin: 0;
+            padding: 5px 0;
+        }
+
+        .popup-info {
+            margin: 0;
+            padding: 5px 0;
+        }
+
+        .popup-image img {
+            width: 100%;
+            height: auto;
+            max-height: 200px;
+        }
+    </style>
+</body>
+</html>
