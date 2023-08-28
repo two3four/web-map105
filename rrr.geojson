@@ -1,0 +1,10 @@
+{
+"type": "FeatureCollection",
+"name": "rrr",
+"crs": { "type": "name", "properties": { "name": "urn:ogc:def:crs:OGC:1.3:CRS84" } },
+"features": [
+{ "type": "Feature", "properties": { "Name": null, "Info": null, "Image": null, "x": 42.842, "y": 20.708 }, "geometry": { "type": "Point", "coordinates": [ 42.842374198303631, 20.707934818297797 ] } },
+{ "type": "Feature", "properties": { "Name": null, "Info": null, "Image": null, "x": 43.819, "y": 22.711 }, "geometry": { "type": "Point", "coordinates": [ 43.819270552585493, 22.710572344575606 ] } },
+{ "type": "Feature", "properties": { "Name": "Jeddah", "Info": "A vibrant Red Sea City, blend rich hisotry with modernity and serves as a cultural crossroads", "Image": "https://github.com/two3four/web-map105/blob/main/Jeddah.JPG", "x": 39.155, "y": 21.577 }, "geometry": { "type": "Point", "coordinates": [ 39.155056757284896, 21.576805838013797 ] } }
+]
+}
