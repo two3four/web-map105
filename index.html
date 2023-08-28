@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dark Themed Leaflet Map</title>
+    <title>Colorful Leaflet Map</title>
     <!-- Include Leaflet CSS and JS -->
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css">
     <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
@@ -20,20 +20,26 @@
         // Initialize the map
         var map = L.map('map').setView([25, 40], 3); // Adjust the view center and zoom level
 
-        // Add a dark-themed tile layer (CartoDB Dark Matter)
-        L.tileLayer('https://cartodb-basemaps-{s}.global.ssl.fastly.net/dark_all/{z}/{x}/{y}.png', {
+        // Add a colorful tile layer (CartoDB Positron)
+        L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png', {
             attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, Imagery &copy; <a href="https://carto.com/attribution">CARTO</a>'
         }).addTo(map);
 
         // Load and style GeoJSON data (Arab countries)
-        fetch('https://raw.githubusercontent.com/two3four/web-map105/main/arab_con.geojson')
+        fetch('https://raw.githubusercontent.com/two3four/web-map105/main/arab_conn.geojson')
             .then(response => response.json())
             .then(data => {
+                var turquoiseColors = ['#35D6ED', '#65DDEF', '#7AE5F5', '#97EBF4', '#C9F6FF'];
+                var index = 0;
+
                 L.geoJSON(data, {
-                    style: function(feature) {
+                    style: function() {
+                        var color = turquoiseColors[index];
+                        index = (index + 1) % turquoiseColors.length;
+
                         return {
-                            fillColor: 'rgba(0, 128, 255, 0.45)', // Sky blue with 45% transparency
-                            fillOpacity: 0.5,
+                            fillColor: color,
+                            fillOpacity: 0.6, // Set transparency to 60%
                             color: 'white',
                             weight: 1
                         };
@@ -45,7 +51,17 @@
         fetch('https://raw.githubusercontent.com/two3four/web-map105/main/test_points.geojson')
             .then(response => response.json())
             .then(data => {
-                var markers = L.markerClusterGroup();
+                var markers = L.markerClusterGroup({
+                    iconCreateFunction: function(cluster) {
+                        var childCount = cluster.getChildCount();
+
+                        return L.divIcon({
+                            html: '<div class="cluster-icon">' + childCount + '</div>',
+                            className: 'cluster',
+                            iconSize: L.point(40, 40)
+                        });
+                    }
+                });
 
                 L.geoJSON(data, {
                     pointToLayer: function(feature, latlng) {
@@ -63,12 +79,19 @@
                             popupContent += '<p class="popup-info">' + feature.properties.Info + '</p>';
                             popupContent += '<div class="popup-image"><img src="' + feature.properties.Image + '" alt="' + feature.properties.Name + '"></div>';
                             popupContent += '</div>';
-                            
-                            marker.bindPopup(popupContent, { 
-                                minWidth: 300, 
+
+                            var popupOptions = {
+                                minWidth: 300,
                                 maxWidth: 400,
                                 className: 'custom-popup' // Add custom class for styling
-                            });
+                            };
+
+                            if (L.Browser.mobile) {
+                                // Use a different class for mobile devices to adjust styling
+                                popupOptions.className = 'custom-popup-mobile';
+                            }
+
+                            marker.bindPopup(popupContent, popupOptions);
                         }
 
                         return marker;
@@ -89,7 +112,7 @@
         .marker-dot {
             width: 20px;
             height: 20px;
-            background-color: red;
+            background-color: #1D78AB;
             border-radius: 50%;
             animation: pulse 1s infinite; /* Reduced to 1 second */
         }
@@ -106,32 +129,44 @@
         .marker-cluster div {
             background-color: rgba(0, 128, 255, 0.45); /* Sky blue with 45% transparency */
         }
-        
+
+        .cluster {
+            text-align: center;
+            line-height: 30px;
+        }
+
+        .cluster-icon {
+            width: 40px;
+            height: 45px;
+            background: url(https://raw.githubusercontent.com/two3four/web-map105/main/pp.png) center/contain no-repeat; /* Use the custom logo image */
+            color: white;
+            font-size: 13px;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
         .custom-popup {
             background-color: rgba(0, 0, 0, 0.8); /* Dark background color */
             color: white;
             font-family: Arial, sans-serif;
             font-size: 14px;
             padding: 10px;
+            border: 2px solid #00BFFF; /* Sky blue border */
         }
 
-        .popup-name {
-            font-size: 18px;
-            font-weight: bold;
-            margin: 0;
-            padding: 5px 0;
+        .custom-popup-mobile {
+            background-color: rgba(0, 0, 0, 0.8);
+            color: white;
+            font-family: Arial, sans-serif;
+            font-size: 14px;
+            padding: 10px;
+            border: 2px solid #00BFFF;
+            max-width: 200px; /* Adjust as needed for mobile */
         }
 
-        .popup-info {
-            margin: 0;
-            padding: 5px 0;
-        }
-
-        .popup-image img {
-            width: 100%;
-            height: auto;
-            max-height: 200px;
-        }
+        /* ... Rest of CSS ... */
     </style>
 </body>
 </html>
