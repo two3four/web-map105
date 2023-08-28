@@ -21,7 +21,7 @@
         var map = L.map('map').setView([25, 40], 3); // Adjust the view center and zoom level
 
         // Add a colorful tile layer (CartoDB Positron)
-        L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png', {
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
             attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, Imagery &copy; <a href="https://carto.com/attribution">CARTO</a>'
         }).addTo(map);
 
@@ -39,7 +39,7 @@
 
                         return {
                             fillColor: color,
-                            fillOpacity: 0.6, // Set transparency to 60%
+                            fillOpacity: 0.48, // Set transparency to 48%
                             color: 'white',
                             weight: 1
                         };
